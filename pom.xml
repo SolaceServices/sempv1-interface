@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.solace.psg</groupId>
-  <artifactId>semp-interface</artifactId>
+  <artifactId>sempv1-interface</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>solace-semp</name>
+  <name>solace-sempv1</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
