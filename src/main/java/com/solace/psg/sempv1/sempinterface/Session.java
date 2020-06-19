@@ -10,8 +10,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.solace.psg.sempv1.solacesempreply.ObjectFactory;
 
@@ -19,22 +17,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
-@Component
-public class Session {
-
+public class Session 
+{
     private static final Logger logger = LoggerFactory.getLogger(Session.class);
 
-    @Value("${solace.semp.uri:http://localhost:8080/SEMP}")
-    private String solaceSEMPURI;
+    private String solaceSEMPURI = "http://localhost:8080/SEMP";
 
-    @Value("${solace.semp.user:admin}")
-    private String solaceSEMPUsername;
+    private String solaceSEMPUsername = "admin";;
 
-    @Value("${solace.semp.password:admin}")
-    private String solaceSEMPPassword;
+    private String solaceSEMPPassword = "admin";
 
-    @Value("${solace.semp.version:<rpc>}")
-    private String solaceSEMPRPCVersion;
+    private String solaceSEMPRPCVersion = "<rpc>";
 
     private int lastHTTPResponseCode;
 
@@ -44,7 +37,8 @@ public class Session {
 
     private JAXBContext rpcReplyContext = null;
 
-    public Session() {
+    public Session() 
+    {
     }
 
     public String getSolaceSEMPURI() {

@@ -1,23 +1,19 @@
 package com.solace.psg.sempv1.sempinterface;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.ParseException;
+
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.xml.bind.JAXBContext;
+
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+
 import java.io.IOException;
-import java.io.StringReader;
 
-public class ConfigureCommands
+
+public class ConfigureCommands extends SempCommand
 {
-	private SempSession session;
-
 	private String solaceSEMPConfigureSubscriptionEvents = "<message-vpn><vpn-name>{vpn}</vpn-name><event><publish-subscription><event-topic-format></event-topic-format><v2></v2></publish-subscription></event></message-vpn></rpc>";
 	private String queueShutdownCommand = "<message-spool><vpn-name>{vpn}</vpn-name><queue><name>{queueName}</name><shutdown><{shutdownType}></{shutdownType}></shutdown></queue></message-spool></rpc>";
 	private String queueNoShutdownCommand = "<message-spool><vpn-name>{vpn}</vpn-name><queue><name>{queueName}</name><no><shutdown><{shutdownType}></{shutdownType}></shutdown></no></queue></message-spool></rpc>";
@@ -29,15 +25,13 @@ public class ConfigureCommands
 	
 	private static final Logger logger = LoggerFactory.getLogger(ConfigureCommands.class);
 
-	private JAXBContext jaxbContext;
-
 	/**
 	 * Initialises a new instance of the class.
 	 * @param session SEMP HTTP session.
 	 */
 	public ConfigureCommands(SempSession session)
 	{
-		this.session = session;
+		super(session);
 	}
 	
 	/**
@@ -63,6 +57,8 @@ public class ConfigureCommands
 		
 		String command = queueShutdownCommand.replace("{vpn}", vpnName).replace("{queueName}", queueName).replace("{shutdownType}", shutdownType);
 
+		logger.info("Executing SEMP configure command shutdownQueue for vpn {}, queue {}.", vpnName, queueName);
+		
 		return executeCommand(command);	
 	}
 
@@ -87,6 +83,8 @@ public class ConfigureCommands
 			throw new IllegalArgumentException("Argument shutdownType cannot be null.");
 		
 		String command = queueNoShutdownCommand.replace("{vpn}", vpnName).replace("{queueName}", queueName).replace("{shutdownType}", shutdownType);
+
+		logger.info("Executing SEMP configure command enableQueue for vpn {}, queue {}.", vpnName, queueName);
 
 		return executeCommand(command);	
 	}
@@ -113,69 +111,11 @@ public class ConfigureCommands
 		
 		String command = queueMaxUnackedCommand.replace("{vpn}", vpnName).replace("{queueName}", queueName).replace("{maxUnacked}", Integer.toString(maxUnackedMessageCount));
 
+		logger.info("Executing SEMP configure command setQueueMaxUnackedMessages for vpn {}, queue {}.", vpnName, queueName);
+
 		return executeCommand(command);			
 	}
-	
-	/**
-	 * Executes a configuration command.
-	 * @param command
-	 * @return
-	 * @throws IOException 
-	 * @throws ParseException 
-	 * @throws AuthenticationException 
-	 * @throws JAXBException 
-	 */
-	private boolean executeCommand(String command) throws ParseException, IOException, AuthenticationException, JAXBException
-	{
-		boolean success = false;
-
-		session.open();		
-
-		logger.info("Running configure command: {}", command);
-		CloseableHttpResponse response = session.execute(command);
-
-		if (response.getStatusLine().getStatusCode() == 200)
-		{
-			logger.info("Received 200 response from SEMP API");
-
-			HttpEntity httpEntity = response.getEntity();
-			String apiOutput = EntityUtils.toString(httpEntity);
-
-			jaxbContext = session.getRpcReplyContext();
-
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
-					.unmarshal(new StringReader(apiOutput));
-
-			com.solace.psg.sempv1.solacesempreply.RpcReply.ExecuteResult result = reply.getExecuteResult();
-
-			if (result.getCode().equals("ok"))
-			{
-				success = true;
-			}
-			else
-			{
-				success = false;
-				logger.info("Response from SEMP API {}", apiOutput);
-			}
-
-			logger.info("Result code {}", result.getCode());
-
-		}
-		else
-		{
-			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
-
-			success = false;
-		}
-
-		session.close();
-
-		logger.info("Configure command completed ({})", command);
-
-		return success;				
-	}
-	
+		
 	/**
 	 * Configure subscription events for a VPN.
 	 * @return true if success
@@ -192,6 +132,9 @@ public class ConfigureCommands
 	
 		String command = solaceSEMPConfigureSubscriptionEvents.replace("{vpn}",
 				vpnName);
+
+		logger.info("Executing SEMP configure command configureSubscriptionEvents for vpn {}.", vpnName);
+
 		return executeCommand(command);	
 	}
 
