@@ -1,4 +1,4 @@
-package com.solace.psg.sempv1.sempinterface;
+package com.solace.psg.sempv1;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -69,7 +69,7 @@ public class HttpSempSession extends SempSession
 	 * @throws IOException
 	 * @throws AuthenticationException
 	 */
-	private CloseableHttpResponse executeRequest(String commandXML) throws IOException, AuthenticationException
+	public CloseableHttpResponse executeRequest(String commandXML) throws IOException, AuthenticationException
 	{
 		HttpPost httpPost = new HttpPost(solaceSEMPURI);
 

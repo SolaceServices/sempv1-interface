@@ -1,4 +1,4 @@
-package com.solace.psg.sempv1.sempinterface;
+package com.solace.psg.sempv1;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthenticationException;
@@ -10,11 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import com.solace.psg.sempv1.solacesempreply.QueueType;
-import com.solace.psg.sempv1.solacesempreply.QueueType.SpooledMessages;
-import com.solace.psg.sempv1.solacesempreply.QueueType.Stats;
+
 import com.solace.psg.sempv1.solacesempreply.RpcReply.MoreCookie;
-import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues.TotalRates;
-import com.solace.psg.sempv1.solacesempreply.SpooledMessage;
 
 import javax.xml.bind.JAXBContext;
 

@@ -3,6 +3,8 @@
  */
 package com.solace.psg.sempv1.sempinterface;
 
+import com.solace.psg.sempv1.HttpSempSession;
+
 /**
  * BaseSempTest class.
  * @author VictorTsonkov

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.solace.psg.sempv1.sempinterface;
+package com.solace.psg.sempv1;
 
 import java.io.IOException;
 
@@ -40,6 +40,8 @@ public abstract class SempSession
 	//protected String messageVpn = "default";
 	
 	public abstract CloseableHttpResponse execute(String commandXML) throws IOException, AuthenticationException;
+
+	public abstract CloseableHttpResponse executeRequest(String commandXML) throws IOException, AuthenticationException;
 	
 	public abstract CloseableHttpResponse executeMore(String commandXML) throws IOException, AuthenticationException;
 

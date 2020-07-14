@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.solace.psg.sempv1.sempinterface;
+package com.solace.psg.sempv1;
 
 import java.io.IOException;
 import java.io.StringReader;

@@ -14,6 +14,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import com.solace.psg.sempv1.HttpSempSession;
+import com.solace.psg.sempv1.ShowCommands;
+
 
 public class ShowCommandsTest extends BaseSempTest
 {

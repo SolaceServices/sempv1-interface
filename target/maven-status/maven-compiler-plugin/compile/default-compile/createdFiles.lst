@@ -151,6 +151,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$ClientProfile$Event$Service$Smf$Conn
 com\solace\psg\sempv1\solacesemprequest\Rpc$Authentication$UserClass$AccessLevel$Ldap$No.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Cluster$Clusters$Cluster2$Authentication$Basic.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$Queue$Event$SpoolUsage$No$Thresholds.class
+com\solace\psg\sempv1\ConfigureCommands.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$Event.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Service$Rest$Incoming$No$Shutdown.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$No.class
@@ -478,6 +479,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$ClientProfile$Event$TransactedSessio
 com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Bridge$Remote$Create.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Clear$Stats.class
+com\solace\psg\sempv1\AdminCommands.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$MessageVpn$RestConsumerInfo$ConnectionInfoTcp.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Rest$RestDeliveryPoint$No$Shutdown.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$Authentication$Basic$AesPassword.class
@@ -907,7 +909,6 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$AclProfile$PublishTopic$No.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Admin$No.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Rest$RestDeliveryPoint$RestConsumer$Authentication$ClientCertificate$No.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Show$MessageSpool.class
-com\solace\psg\sempv1\sempinterface\SempSession.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Service$Smf.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Service$Amqp$PlainText$No.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache$CacheCluster$CacheInstance$No$Shutdown.class
@@ -1263,7 +1264,6 @@ com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Client$SortedStats.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$Authentication.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$TopicEndpoint$DeadMessageQueue.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$AclProfile$SubscribeTopic$Exceptions.class
-com\solace\psg\sempv1\sempinterface\ConfigureCommands.class
 com\solace\psg\sempv1\solacesempreply\ObjectFactory.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache$CacheCluster$GlobalCaching$No$Heartbeat.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Jndi$Topic$No$PhysicalName.class
@@ -1403,7 +1403,6 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$Bridge$Ssl$CipherSuite.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$No$Username.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Rest$RestDeliveryPoint$ClientProfile.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$ConfigSync$ClientProfile.class
-com\solace\psg\sempv1\sempinterface\ShowCommands.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Service$Mqtt$WebsocketSecure$No$Shutdown.class
 com\solace\psg\sempv1\solacesempreply\LdapProfileType$LdapServers$LdapServer.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$Event$EgressFlows$Thresholds.class
@@ -1531,7 +1530,6 @@ com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Cluster$Clusters$Cluster
 com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache$No$Shutdown.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Admin$MessageSpool$SequencedTopic.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Service$Mqtt$Ssl$No$Shutdown.class
-com\solace\psg\sempv1\sempinterface\Session.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Redundancy$No$SwitchoverMechanism.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache$CacheCluster$GlobalCaching$HomeCacheCluster$TopicPrefix.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Compression$Mode.class
@@ -1544,7 +1542,6 @@ com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Snmp$SnmpServer$Hosts.cl
 com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$Event$IngressFlows$Thresholds.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Show$ConfigSync.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$SpoolSync$Mirrored$MessageAckTimeout.class
-com\solace\psg\sempv1\sempinterface\AdminCommands.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$MultiNodeRouting$Cspf$Neighbor$Tcp$Keepalive$Interval.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Replication$Bridge$RetryDelay.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$No$ClientProfile.class
@@ -1718,7 +1715,6 @@ com\solace\psg\sempv1\solacesempreply\DtoPriorityType.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$Cspf$Ssl$ClientCertificate$CertificateFile.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$MultiNodeRouting$Cspf$Neighbor$No$SslData.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$DistributedCache$Summary.class
-com\solace\psg\sempv1\sempinterface\HttpSempSession.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Event$No$PublishClient.class
 com\solace\psg\sempv1\solacesempreply\NeighborStatsType$EgressDiscards.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$System.class
@@ -1799,6 +1795,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$TopicEndpoint$IngressSe
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$Cspf$Neighbor$ConnectVia.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Event$Service$Amqp.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Replication$Bridge$Unidirectional$No.class
+com\solace\psg\sempv1\ShowCommands.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Cspf$Neighbor$Neighbors$Neighbor2$QueueStats$ControlQueuesControlCard.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$AclProfile$ClientConnect$Exception.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$ConfigSync$ClientProfile$Tcp$Mss.class
@@ -1911,7 +1908,6 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$TopicEndpoint$MaxMessag
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$Authentication$AuthScheme.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$Queue$No$MaxSpoolUsage.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Smrp$Stats.class
-com\solace\psg\sempv1\sempinterface\CreateCommands.class
 com\solace\psg\sempv1\solacesempreply\MqttConnectionStats.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$CertificateAuthority$CertificateAuthority2$Stats.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Authentication$UserClass$AccessLevel$Default$MessageVpn$No$AccessLevelException.class
@@ -1985,7 +1981,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Service$Amqp$ListenPort.c
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Interface$Interfaces$Interface2$RxMacDropStats.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$Queue$No$Owner.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$ClientUsername$No$AclProfile.class
-com\solace\psg\sempv1\sempinterface\SempCommand.class
+com\solace\psg\sempv1\HttpSempSession.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MemoryEvent$NabBufferLoadFactor.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Authentication$UserClass$RadiusDomain.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Service$WebTransport$MaxConnections.class
@@ -2109,6 +2105,7 @@ com\solace\psg\sempv1\solacesempreply\RedundancyDetailInfoType$LastUpdateStatus.
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Hardware$Fabric$Slot$Chips$Chip$Banks$Bank.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$Queue$RejectMsgToSenderOnDiscard.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Service$HealthCheck$ListenPort.class
+com\solace\psg\sempv1\SempSession.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Jndi$Queue.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Event$Service$Rest.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Jndi$Create.class
@@ -2128,6 +2125,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$Event$Transact
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$MessageVpn$Replication.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$MessageVpn$Mqtt.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Authorization.class
+com\solace\psg\sempv1\Session.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Rest$RestDeliveryPoint$QueueBinding$No$PostRequestTarget.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageVpn$Rest$Ssl$ServerCertificateValidation$No.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Redundancy$VirtualRouters.class
@@ -2178,6 +2176,7 @@ com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$RadiusProfile.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$ClientProfile$Tcp$Keepalive$No$Interval.class
 com\solace\psg\sempv1\solacesempreply\AclTopicConfiguration$Exceptions.class
 com\solace\psg\sempv1\solacesempreply\NeighborStatsType$CompressionDecompressionStats$CompressionRatios$DataBytes.class
+com\solace\psg\sempv1\SempCommand.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Redundancy$Group$Create.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Replication$Ssl$No.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Ssl$No$ServerCertificate.class

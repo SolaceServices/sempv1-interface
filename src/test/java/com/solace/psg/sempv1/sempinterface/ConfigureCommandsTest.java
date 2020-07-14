@@ -15,6 +15,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.solace.psg.sempv1.ConfigureCommands;
+import com.solace.psg.sempv1.HttpSempSession;
+
 /**
  * Test class for ConfigureCommands.
  * @author VictorTsonkov
@@ -44,7 +47,7 @@ public class ConfigureCommandsTest extends BaseSempTest
 	}
 
 	/**
-	 * Test method for {@link com.solace.psg.sempv1.sempinterface.ConfigureCommands#shutdownQueue(java.lang.String, java.lang.String)}.
+	 * Test method for {@link com.solace.psg.sempv1.ConfigureCommands#shutdownQueue(java.lang.String, java.lang.String)}.
 	 */
 	@Test @Ignore
 	public void testShutdownQueue()
@@ -70,7 +73,7 @@ public class ConfigureCommandsTest extends BaseSempTest
 	}
 
 	/**
-	 * Test method for {@link com.solace.psg.sempv1.sempinterface.ConfigureCommands#enableQueue(java.lang.String, java.lang.String)}.
+	 * Test method for {@link com.solace.psg.sempv1.ConfigureCommands#enableQueue(java.lang.String, java.lang.String)}.
 	 */
 	@Test @Ignore
 	public void testEnableQueue()
@@ -96,7 +99,7 @@ public class ConfigureCommandsTest extends BaseSempTest
 	}
 
 	/**
-	 * Test method for {@link com.solace.psg.sempv1.sempinterface.ConfigureCommands#configureSubscriptionEvents()}.
+	 * Test method for {@link com.solace.psg.sempv1.ConfigureCommands#configureSubscriptionEvents()}.
 	 */
 	@Test @Ignore
 	public void testConfigureSubscriptionEvents()

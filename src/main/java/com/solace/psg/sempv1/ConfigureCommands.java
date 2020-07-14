@@ -1,4 +1,4 @@
-package com.solace.psg.sempv1.sempinterface;
+package com.solace.psg.sempv1;
 
 
 import org.apache.http.auth.AuthenticationException;

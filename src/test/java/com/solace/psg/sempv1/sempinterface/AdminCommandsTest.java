@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.solace.psg.sempv1.AdminCommands;
+import com.solace.psg.sempv1.HttpSempSession;
+
 public class AdminCommandsTest extends BaseSempTest
 {
 
