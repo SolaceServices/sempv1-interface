@@ -1,6 +1,7 @@
 package com.solace.psg.sempv1;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,9 +10,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.solace.psg.sempv1.solacesempreply.QendptInfoType;
 import com.solace.psg.sempv1.solacesempreply.QueueType;
 
 import com.solace.psg.sempv1.solacesempreply.RpcReply.MoreCookie;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
 
 import javax.xml.bind.JAXBContext;
 
@@ -42,6 +45,8 @@ public class ShowCommands
 	private String showSubcriptions = "<show><smrp><subscriptions></subscriptions></smrp></show></rpc>";
 
 	private String showVpnQueues = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><count/><num-elements>{elementCount}</num-elements></queue></show></rpc>";
+
+	private String showVpnQueuesStats = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><stats></stats></queue></show></rpc>";
 
 	private String showQueueSpooledMessages = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name></queue></show></rpc>";
 
@@ -133,14 +138,65 @@ public class ShowCommands
 	}
 	
 	/**
+	 * Gets queues info.
+	 * @param vpnName
+	 * @return
+	 * @throws JAXBException
+	 * @throws AuthenticationException
+	 * @throws IOException
+	 */
+	public Queues getVpnQueueStats(String vpnName) throws JAXBException, HttpException, IOException
+	{
+		if (vpnName == null)
+			throw new IllegalArgumentException("Argument vpnName cannot be null.");
+		
+		Queues result = null;
+		
+		session.open();
+
+		String command = showVpnQueuesStats.replace("{vpn}", vpnName);
+
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			result = reply.getRpc().getShow().getQueue().getQueues();
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+			throw new HttpException("Request returned unexpected Status code: " + response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", showSubcriptions);
+	
+		return result;
+	}
+
+	
+	/**
 	 * Gets list of queues for a VPN.
 	 * @param vpnName
 	 * @return
 	 * @throws IOException 
-	 * @throws AuthenticationException 
 	 * @throws JAXBException 
+	 * @throws HttpException 
 	 */
-	public List<String> getVpnQueues(String vpnName) throws AuthenticationException, IOException, JAXBException
+	public List<String> getVpnQueues(String vpnName) throws IOException, JAXBException, HttpException
 	{
 		if (vpnName == null)
 			throw new IllegalArgumentException("Argument vpnName cannot be null.");
@@ -183,7 +239,12 @@ public class ShowCommands
 				session.reopen();
 				response = session.executeMore(commandMore);
 
-				if (response.getStatusLine().getStatusCode() == 200)
+				if (response.getStatusLine().getStatusCode() != 200)
+				{
+					throw new HttpException("The request status code was: " + response.getStatusLine().getStatusCode());
+				}
+				
+				else
 				{
 					logger.info("Received 200 response from SEMP API more command");
 

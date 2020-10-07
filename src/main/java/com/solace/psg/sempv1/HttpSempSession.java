@@ -11,10 +11,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.solace.psg.sempv1.solacesempreply.ObjectFactory;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 /**

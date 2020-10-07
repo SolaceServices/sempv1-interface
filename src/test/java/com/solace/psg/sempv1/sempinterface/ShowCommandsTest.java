@@ -8,14 +8,17 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.http.HttpException;
 import org.apache.http.auth.AuthenticationException;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import com.solace.psg.sempv1.HttpSempSession;
 import com.solace.psg.sempv1.ShowCommands;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
 
 
 public class ShowCommandsTest extends BaseSempTest
@@ -31,12 +34,13 @@ public class ShowCommandsTest extends BaseSempTest
 	{
 		username = System.getProperty("username");
 		password = System.getProperty("password");
-		//sempUrl = System.getProperty("sempUrl");
+	    sempUrl = System.getProperty("url");
+	    vpnName = System.getProperty("vpn");
 
 		session = new HttpSempSession(username, password, sempUrl);	
 	}
 
-	@Test
+	@Test @Ignore
 	public void testGetVpnQueues()
 	{
 		try
@@ -52,8 +56,24 @@ public class ShowCommandsTest extends BaseSempTest
 			fail("Error occured: " + e.getMessage());
 		}
 	}
+	
+	@Test //@Ignore
+	public void testGetVpnQueuesStats()
+	{
+		try
+		{
+			ShowCommands show = new ShowCommands(session);
+		
+			Queues queues = show.getVpnQueueStats(vpnName);
+			assertNotNull(queues);
+		}
+		catch (HttpException | IOException | JAXBException | SAXException e)
+		{
+			fail("Error occured: " + e.getMessage());
+		}
+	}
 
-	@Test
+	@Test @Ignore
 	public void testMessageSpoolCount()
 	{
 		try
@@ -64,7 +84,7 @@ public class ShowCommandsTest extends BaseSempTest
 			assertNotNull(queues);
 			assertTrue(queues.size() > 0);
 		}
-		catch (AuthenticationException | IOException | JAXBException | SAXException e)
+		catch (IOException | JAXBException | SAXException | HttpException e)
 		{
 			fail("Error occured: " + e.getMessage());
 		}
