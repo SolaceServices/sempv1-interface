@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.solace.psg.sempv1.sempinterface.ConfigureCommandsTest
--------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 1, Skipped: 3, Time elapsed: 0.003 s <<< FAILURE! - in com.solace.psg.sempv1.sempinterface.ConfigureCommandsTest
-testConfigureMaxUnackedMessages(com.solace.psg.sempv1.sempinterface.ConfigureCommandsTest)  Time elapsed: 0.002 s  <<< ERROR!
-java.lang.IllegalArgumentException: Username may not be null
-	at com.solace.psg.sempv1.sempinterface.ConfigureCommandsTest.testConfigureMaxUnackedMessages(ConfigureCommandsTest.java:128)
-

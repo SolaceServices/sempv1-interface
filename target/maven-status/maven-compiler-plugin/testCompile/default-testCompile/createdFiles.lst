@@ -1,4 +1,4 @@
-com/solace/psg/sempv1/sempinterface/ConfigureCommandsTest.class
-com/solace/psg/sempv1/sempinterface/AdminCommandsTest.class
-com/solace/psg/sempv1/sempinterface/BaseSempTest.class
-com/solace/psg/sempv1/sempinterface/ShowCommandsTest.class
+com\solace\psg\sempv1\sempinterface\ConfigureCommandsTest.class
+com\solace\psg\sempv1\sempinterface\AdminCommandsTest.class
+com\solace\psg\sempv1\sempinterface\BaseSempTest.class
+com\solace\psg\sempv1\sempinterface\ShowCommandsTest.class
