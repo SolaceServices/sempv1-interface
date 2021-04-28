@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: com.solace.psg.sempv1.sempinterface.AdminCommandsTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 2.231 s <<< FAILURE! - in com.solace.psg.sempv1.sempinterface.AdminCommandsTest
+testPurgeQueueMessages(com.solace.psg.sempv1.sempinterface.AdminCommandsTest)  Time elapsed: 2.091 s  <<< ERROR!
+java.lang.IllegalArgumentException: Username may not be null
+	at com.solace.psg.sempv1.sempinterface.AdminCommandsTest.testPurgeQueueMessages(AdminCommandsTest.java:42)
+

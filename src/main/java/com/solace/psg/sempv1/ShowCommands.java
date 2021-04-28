@@ -182,7 +182,7 @@ public class ShowCommands
 
 		session.close();
 
-		logger.info("Show command completed", showSubcriptions);
+		logger.info("Show command completed", showVpnQueuesStats);
 	
 		return result;
 	}
