@@ -40,14 +40,3 @@ For more information on how to import and use JAXB-generated APIs, go to https:/
 
 ### Merge newly generated files
 If updating a new schema version, the newly generated files need to be merged into the existing source. The package types need to match the existing ones.
-
-### Building the library:
-To build solution use the folowing command:
- ```bash
- mvn clean compile package -DskipTests
- ```
- 
-To skip tests add the follwoing parameter to the build command:
- ```bash
- mvn clean compile package -DskipTests
- ```
