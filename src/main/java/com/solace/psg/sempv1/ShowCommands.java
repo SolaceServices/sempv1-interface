@@ -10,11 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.solace.psg.sempv1.solacesempreply.QendptInfoType;
 import com.solace.psg.sempv1.solacesempreply.QueueType;
 
 import com.solace.psg.sempv1.solacesempreply.RpcReply.MoreCookie;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Log.Rest.Entry;
 import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
+import com.solace.psg.sempv1.solacesemprequest.Rpc.Show.Log;
 
 import javax.xml.bind.JAXBContext;
 
@@ -42,6 +43,8 @@ public class ShowCommands
 {
 	private SempSession session;
 	
+	private int pageElementCount = 50;
+
 	private String showSubcriptions = "<show><smrp><subscriptions></subscriptions></smrp></show></rpc>";
 
 	private String showVpnQueues = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><count/><num-elements>{elementCount}</num-elements></queue></show></rpc>";
@@ -52,7 +55,10 @@ public class ShowCommands
 
 	private static final Logger logger = LoggerFactory.getLogger(ShowCommands.class);
 	
-	private int pageElementCount = 50;
+	//private String showLog = "<show><log><{logType}></{logType}></log></show></rpc>";
+	private String showLogTail = "<show><log><{logType}><lines></lines><num-lines>{lineCount}</num-lines></{logType}></log></show></rpc>";
+	//private String showRestLog = "<show><log><{logType}><rest-delivery-point></rest-delivery-point><errors></errors></{logType}></log></show></rpc>";
+	private String showRestLogWide = "<show><log><{logType}><rest-delivery-point></rest-delivery-point><errors></errors><wide></wide></{logType}></log></show></rpc>";
 
 	/**
 	 * Gets the page element count for elements retrieved on a single request.
@@ -132,7 +138,7 @@ public class ShowCommands
 
 		session.close();
 
-		logger.info("Show command completed", showSubcriptions);
+		logger.info("Show command completed", command);
 	
 		return result;
 	}
@@ -182,11 +188,119 @@ public class ShowCommands
 
 		session.close();
 
-		logger.info("Show command completed", showVpnQueuesStats);
+		logger.info("Show command completed", command);
 	
 		return result;
 	}
 
+	/**
+	 * Gets list of queues for a VPN.
+	 * @param vpnName
+	 * @return
+	 * @throws IOException 
+	 * @throws JAXBException 
+	 * @throws HttpException 
+	 */
+	public List<String> getLogTail(LogType logType, int lineCount) throws IOException, JAXBException, HttpException
+	{
+		if (lineCount < 1)
+			throw new IllegalArgumentException("Argument lineCount cannot be less than 1.");
+		
+		List<String> result = null;
+		
+		session.open();
+
+		String command = null;
+		if (logType == LogType.REST)
+			command = showRestLogWide.replace("{logType}", logType.toString());
+		else
+			command = showLogTail.replace("{logType}", logType.toString()).replace("{lineCount}", String.valueOf(lineCount));
+		
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Log log = reply.getRpc().getShow().getLog();
+	
+			switch (logType)
+			{
+				case COMMAND:
+					result = log.getCommand().getLogEntry();
+					break;
+				case SYSTEM:
+					result = log.getSystem().getLogEntry();
+					break;				
+				case EVENT:
+					result = log.getEvent().getLogEntry();
+					break;
+				case DEBUG:
+					result = log.getDebug().getLogEntry();
+					break;
+				case REST:
+					// REST logs seem to come all back paginated, so no need to check the more cookie. 
+					List<Entry> allEntries = log.getRest().getEntry();
+					result = new ArrayList<String>();	
+					
+					// Trim the lineCount lines from the end.
+					List<Entry> lastEntries = null;
+					if (allEntries.size() > lineCount)
+						lastEntries = allEntries.subList(allEntries.size() - lineCount, allEntries.size());
+					else
+						lastEntries = allEntries;
+
+					// Parse result.
+					for (Entry entry : lastEntries)
+						result.add(getRestEntryToString(entry));
+					//int size = allEntries.size() <= lineCount ? allEntries.size() : lineCount;
+					//for (int i = 0; i < size; i++)
+					//	result.add(getRestEntryToString(lastEntries.get(i)));
+					break;
+			}
+			
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+		
+		return result;
+	}
+
+	/**
+	 * Entry class doesn't have a toString implementation so we need to provide one. 
+	 * @param entry
+	 * @return
+	 */
+	private String getRestEntryToString(Entry entry)
+	{
+		String delimiter = " | ";
+		StringBuilder sb = new StringBuilder();
+		sb.append(entry.getTimestamp());sb.append(delimiter);
+		sb.append(entry.getVpnName());sb.append(delimiter);
+		sb.append(entry.getRdpName());sb.append(delimiter);
+		sb.append(entry.getRestConsumerName());sb.append(delimiter);
+		sb.append(entry.getLocalAddress());sb.append(delimiter);
+		sb.append(entry.getRemoteAddress());sb.append(delimiter);
+		sb.append(entry.getRestErrorResponses());
+		
+		return sb.toString();	
+	}
 	
 	/**
 	 * Gets list of queues for a VPN.
@@ -276,7 +390,7 @@ public class ShowCommands
 
 		session.close();
 
-		logger.info("Show command completed", showSubcriptions);
+		logger.info("Show command completed", command);
 		
 		return result;
 	}

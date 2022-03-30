@@ -20,6 +20,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$No$DistributedCache.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Show$TopicEndpointTemplate.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Routing$DynamicMessageRouting$Cluster$Link$Initiator.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Show$Clock.class
+com\solace\psg\sempv1\LogType.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Hardware$MessageSpool$Event$MessageCount$No$Thresholds.class
 com\solace\psg\sempv1\solacesempreply\EgressFlowStatsType.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$MessageSpool$MessageSpoolInfo$SpoolSync.class
@@ -2842,6 +2843,7 @@ com\solace\psg\sempv1\solacesemprequest\Rpc$DistributedCache$CacheCluster$Event$
 com\solace\psg\sempv1\solacesemprequest\Rpc$MessageSpool$TopicEndpointTemplate$No$AccessType.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$ClientProfile$Profiles$Profile.class
 com\solace\psg\sempv1\solacesemprequest\Rpc$Admin$DistributedCache$DeleteMessages.class
+com\solace\psg\sempv1\ShowCommands$1.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Session.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$MessageVpn$Replication$MessageVpns$MessageVpn2$RemoteBridge.class
 com\solace\psg\sempv1\solacesempreply\RpcReply$Rpc$Show$Authentication$Authentications$Authentication2$AccessLevelConfiguration$Default.class
