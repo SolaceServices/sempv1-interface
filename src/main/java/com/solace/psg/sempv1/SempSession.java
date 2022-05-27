@@ -18,7 +18,7 @@ import com.solace.psg.sempv1.solacesempreply.ObjectFactory;
 /**
  * Abstract SEMP Session class. 
  * 
- * @author VictorTsonkov
+ * 
  *
  */
 public abstract class SempSession

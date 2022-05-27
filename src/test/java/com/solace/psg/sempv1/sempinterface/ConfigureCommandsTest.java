@@ -20,7 +20,7 @@ import com.solace.psg.sempv1.HttpSempSession;
 
 /**
  * Test class for ConfigureCommands.
- * @author VictorTsonkov
+ * 
  *
  */
 public class ConfigureCommandsTest extends BaseSempTest

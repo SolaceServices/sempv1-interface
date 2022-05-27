@@ -36,7 +36,7 @@ import java.util.Objects;
 /**
  * Class to execute show commands.
  * 
- * @author VictorTsonkov
+ * 
  *
  */
 public class ShowCommands

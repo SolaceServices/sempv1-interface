@@ -15,7 +15,7 @@ import java.io.IOException;
 
 /**
  * Class to handle a Solace SEMP Session calls over HTTP.
- * @author VictorTsonkov
+ * 
  *
  */
 public class HttpSempSession extends SempSession

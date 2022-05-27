@@ -7,7 +7,7 @@ import com.solace.psg.sempv1.HttpSempSession;
 
 /**
  * BaseSempTest class.
- * @author VictorTsonkov
+ * 
  *
  */
 public abstract class BaseSempTest

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class to provide common methods for the different command implementations. 
- * @author VictorTsonkov
+ * 
  *
  */
 public abstract class SempCommand

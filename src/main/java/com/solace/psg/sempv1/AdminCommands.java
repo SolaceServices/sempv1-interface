@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class to handle all admin commands via SEMP V1.
- * @author VictorTsonkov
+ * 
  *
  */
 public class AdminCommands extends SempCommand
