@@ -10,10 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import com.solace.psg.sempv1.solacesempreply.ClientType;
+import com.solace.psg.sempv1.solacesempreply.MessageSpoolMessageVpnEntry;
+import com.solace.psg.sempv1.solacesempreply.QendptInfoType;
 import com.solace.psg.sempv1.solacesempreply.QueueType;
 
 import com.solace.psg.sempv1.solacesempreply.RpcReply.MoreCookie;
 import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Log.Rest.Entry;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.MessageSpool.MessageSpoolInfo;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.MessageVpn;
+import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.MessageVpn.Vpn;
 import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
 import com.solace.psg.sempv1.solacesemprequest.Rpc.Show.Log;
 
@@ -41,9 +47,14 @@ import java.util.Objects;
  */
 public class ShowCommands
 {
+	private static final Logger logger = LoggerFactory.getLogger(ShowCommands.class);
+
 	private SempSession session;
 	
 	private int pageElementCount = 50;
+	
+	private String showMessageVPNs = "<show><message-vpn><vpn-name>*</vpn-name></message-vpn></show></rpc>";	
+	private String showMessageSpoolDetail = "<show><message-spool><vpn-name>{vpn}</vpn-name><detail></detail></message-spool></show></rpc>";	
 
 	private String showSubcriptions = "<show><smrp><subscriptions></subscriptions></smrp></show></rpc>";
 
@@ -51,14 +62,18 @@ public class ShowCommands
 
 	private String showVpnQueuesStats = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><stats></stats></queue></show></rpc>";
 
+	private String showVpnQueueDetail = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><detail></detail></queue></show></rpc>";
+
 	private String showQueueSpooledMessages = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name></queue></show></rpc>";
 
-	private static final Logger logger = LoggerFactory.getLogger(ShowCommands.class);
-	
 	//private String showLog = "<show><log><{logType}></{logType}></log></show></rpc>";
 	private String showLogTail = "<show><log><{logType}><lines></lines><num-lines>{lineCount}</num-lines></{logType}></log></show></rpc>";
 	//private String showRestLog = "<show><log><{logType}><rest-delivery-point></rest-delivery-point><errors></errors></{logType}></log></show></rpc>";
 	private String showRestLogWide = "<show><log><{logType}><rest-delivery-point></rest-delivery-point><errors></errors><wide></wide></{logType}></log></show></rpc>";
+
+	private String showClients = "<show><client><name>*</name></client></show></rpc>";
+
+	private String showClientDetails = "<show><client><name>{clientName}</name><vpn-name>{vpn}</vpn-name><detail></detail></client></show></rpc>";
 
 	/**
 	 * Gets the page element count for elements retrieved on a single request.
@@ -143,6 +158,108 @@ public class ShowCommands
 		return result;
 	}
 	
+	/**
+	 * Gets the Message spool Details for a VPN.
+	 * @param vpnName
+	 * @return
+	 * @throws IOException
+	 * @throws JAXBException
+	 * @throws HttpException
+	 */
+	public MessageSpoolMessageVpnEntry getMessageSpoolDetail(String vpnName) throws IOException, JAXBException, HttpException
+	{
+		if (vpnName == null)
+			throw new IllegalArgumentException("Argument vpnName cannot be null.");
+		
+		MessageSpoolMessageVpnEntry result = null;
+		
+		session.open();
+
+		String command = showMessageSpoolDetail.replace("{vpn}", vpnName);
+		
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			List<Object> entries = reply.getRpc().getShow().getMessageSpool().getMessageVpn().getVpnNameOrVpnOrMessageSpoolRates();
+			result = (MessageSpoolMessageVpnEntry)entries.get(0);
+
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+		
+		return result;
+	}	
+	/**
+	 * Gets the queue details.
+	 * @param vpnName
+	 * @param queueName
+	 * @return
+	 * @throws JAXBException 
+	 * @throws IOException 
+	 * @throws AuthenticationException 
+	 */
+	public QendptInfoType getQueueDetails(String vpnName, String queueName) throws JAXBException, AuthenticationException, IOException
+	{
+		if (vpnName == null)
+			throw new IllegalArgumentException("Argument vpnName cannot be null.");
+		if (queueName == null)
+			throw new IllegalArgumentException("Argument queueName cannot be null.");
+		
+		QendptInfoType result = null;
+		
+		session.open();
+
+		String command = showVpnQueueDetail.replace("{vpn}", vpnName).replace("{queueName}", queueName);
+
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			QueueType type = reply.getRpc().getShow().getQueue().getQueues().getQueue().get(0);
+			result = type.getInfo();
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+	
+		return result;
+	}
 	/**
 	 * Gets queues info.
 	 * @param vpnName
@@ -300,6 +417,277 @@ public class ShowCommands
 		sb.append(entry.getRestErrorResponses());
 		
 		return sb.toString();	
+	}
+	
+	public List<String> getAllMessageVPNs() throws IOException, JAXBException, HttpException
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		
+		session.open();
+
+		String command = showMessageVPNs;
+		
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			List<Vpn> vpns = reply.getRpc().getShow().getMessageVpn().getVpn();		
+
+			for (int subCounter = 0; subCounter < vpns.size(); subCounter++)
+			{
+				Vpn vpn = vpns.get(subCounter);
+				result.add(vpn.getName());
+			}
+
+			MoreCookie mc = reply.getMoreCookie();
+			while (mc != null)
+			{
+				String commandMore = getMoreCookieContent(apiOutput);
+						
+				session.reopen();
+				response = session.executeMore(commandMore);
+
+				if (response.getStatusLine().getStatusCode() != 200)
+				{
+					throw new HttpException("The request status code was: " + response.getStatusLine().getStatusCode());
+				}
+				
+				else
+				{
+					logger.info("Received 200 response from SEMP API more command");
+
+					httpEntity = response.getEntity();
+					apiOutput = EntityUtils.toString(httpEntity);
+
+					jaxbContext = session.getRpcReplyContext();
+					jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+					reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+							.unmarshal(new StringReader(apiOutput));
+
+					vpns = reply.getRpc().getShow().getMessageVpn().getVpn();		
+
+					for (int subCounter = 0; subCounter < vpns.size(); subCounter++)
+					{
+						Vpn vpn = vpns.get(subCounter);
+						result.add(vpn.getName());
+					}
+				}
+				
+				mc = reply.getMoreCookie();
+			}
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+		
+		return result;		
+	}	
+	
+	/**
+	 * Gets all client names on the broker. 
+	 * @return list of client names currently connected.
+	 * @throws IOException
+	 * @throws JAXBException
+	 * @throws HttpException
+	 */
+	public List<String> getAllClientNames() throws IOException, JAXBException, HttpException
+	{
+		ArrayList<String> result = new ArrayList<String>();
+		
+		session.open();
+
+		String command = showClients;
+		
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			List<ClientType> clients = reply.getRpc().getShow().getClient().getPrimaryVirtualRouter().getClient();		
+
+			for (int subCounter = 0; subCounter < clients.size(); subCounter++)
+			{
+				ClientType ct = clients.get(subCounter);
+				result.add(ct.getName());
+			}
+
+			MoreCookie mc = reply.getMoreCookie();
+			while (mc != null)
+			{
+				String commandMore = getMoreCookieContent(apiOutput);
+						
+				session.reopen();
+				response = session.executeMore(commandMore);
+
+				if (response.getStatusLine().getStatusCode() != 200)
+				{
+					throw new HttpException("The request status code was: " + response.getStatusLine().getStatusCode());
+				}
+				
+				else
+				{
+					logger.info("Received 200 response from SEMP API more command");
+
+					httpEntity = response.getEntity();
+					apiOutput = EntityUtils.toString(httpEntity);
+
+					jaxbContext = session.getRpcReplyContext();
+					jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+					reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+							.unmarshal(new StringReader(apiOutput));
+
+					clients = reply.getRpc().getShow().getClient().getPrimaryVirtualRouter().getClient();	
+					for (int subCounter = 0; subCounter < clients.size(); subCounter++)
+					{
+						ClientType ct = clients.get(subCounter);
+						result.add(ct.getName());
+					}
+				}
+				
+				mc = reply.getMoreCookie();
+			}
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+		
+		return result;		
+	}	
+	
+	/**
+	 * Show client details for a given client name. 
+	 * @param clientName the client name
+	 * @return
+	 * @throws IOException
+	 * @throws JAXBException
+	 * @throws HttpException
+	 */
+	public List<ClientType> getClientDetails(String clientName) throws IOException, JAXBException, HttpException
+	{
+		if (clientName == null)
+			throw new IllegalArgumentException("Argument clientName cannot be null.");
+
+		return getClientDetails(clientName, "*");
+	}
+	
+	/**
+	 * Show client details for a given client name. 
+	 * @param clientName the client name.
+	 * @param vpnName the VPN name.
+	 * @return
+	 * @throws IOException
+	 * @throws JAXBException
+	 * @throws HttpException
+	 */
+	public List<ClientType> getClientDetails(String clientName, String vpnName) throws IOException, JAXBException, HttpException
+	{
+		if (vpnName == null)
+			throw new IllegalArgumentException("Argument vpnName cannot be null.");
+		
+		List<ClientType> result = new ArrayList<ClientType>();
+		
+		session.open();
+
+		String command = showClientDetails.replace("{vpn}", vpnName).replace("{clientName}", clientName);
+		
+		logger.info("Running show command: {}", command);
+		CloseableHttpResponse response = session.execute(command);
+
+		if (response.getStatusLine().getStatusCode() == 200)
+		{
+			logger.info("Received 200 response from SEMP API");
+
+			HttpEntity httpEntity = response.getEntity();
+			String apiOutput = EntityUtils.toString(httpEntity);
+
+			jaxbContext = session.getRpcReplyContext();
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+					.unmarshal(new StringReader(apiOutput));
+
+			List<ClientType> clients = reply.getRpc().getShow().getClient().getPrimaryVirtualRouter().getClient();
+			
+			result.addAll(clients);
+
+			MoreCookie mc = reply.getMoreCookie();
+			while (mc != null)
+			{
+				String commandMore = getMoreCookieContent(apiOutput);
+						
+				session.reopen();
+				response = session.executeMore(commandMore);
+
+				if (response.getStatusLine().getStatusCode() != 200)
+				{
+					throw new HttpException("The request status code was: " + response.getStatusLine().getStatusCode());
+				}
+				
+				else
+				{
+					logger.info("Received 200 response from SEMP API more command");
+
+					httpEntity = response.getEntity();
+					apiOutput = EntityUtils.toString(httpEntity);
+
+					jaxbContext = session.getRpcReplyContext();
+					jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+					reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+							.unmarshal(new StringReader(apiOutput));
+
+					clients = reply.getRpc().getShow().getClient().getPrimaryVirtualRouter().getClient();	
+					result.addAll(clients);
+				}
+				
+				mc = reply.getMoreCookie();
+			}
+		}
+		else
+		{
+			logger.warn("Received unexpected ({}) response from SEMP API", response.getStatusLine().getStatusCode());
+		}
+
+		session.close();
+
+		logger.info("Show command completed", command);
+		
+		return result;		
 	}
 	
 	/**

@@ -6,7 +6,7 @@ package com.solace.psg.sempv1;
 /**
  * PunSub+ Service Log types.
  *  
- * @author Victor Tsonkov
+ * @author Victor 
  *
  */
 public enum LogType

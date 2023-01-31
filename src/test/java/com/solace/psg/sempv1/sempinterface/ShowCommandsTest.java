@@ -1,6 +1,7 @@
 package com.solace.psg.sempv1.sempinterface;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -18,6 +19,8 @@ import org.xml.sax.SAXException;
 
 import com.solace.psg.sempv1.HttpSempSession;
 import com.solace.psg.sempv1.ShowCommands;
+import com.solace.psg.sempv1.solacesempreply.ClientType;
+import com.solace.psg.sempv1.solacesempreply.QendptInfoType;
 import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
 
 
@@ -40,6 +43,49 @@ public class ShowCommandsTest extends BaseSempTest
 		session = new HttpSempSession(username, password, sempUrl);	
 	}
 
+	@Test @Ignore
+	public void testGetClientDetails()
+	{
+		try
+		{
+			ShowCommands show = new ShowCommands(session);
+			
+			List<ClientType> clients = show.getClientDetails("*");
+			assertNotNull(clients);
+			
+			/*
+			List<String> names = show.getAllClientNames();
+			assertNotNull(names);
+			
+			if (names.size() > 0)
+			{
+				List<ClientType> clients = show.getClientDetails(names.get(0));
+				
+			}*/
+		}
+		catch (HttpException | IOException | JAXBException | SAXException e)
+		{
+			fail("Error occured: " + e.getMessage());
+		}
+	}
+
+	@Test @Ignore
+	public void testGetAllVpns()
+	{
+		try
+		{
+			ShowCommands show = new ShowCommands(session);
+		
+			List<String> vpns = show.getAllMessageVPNs();
+			assertNotNull(vpns);
+			assumeTrue(vpns.size() > 0);
+		}
+		catch (HttpException | IOException | JAXBException | SAXException e)
+		{
+			fail("Error occured: " + e.getMessage());
+		}
+	}
+	
 	@Test @Ignore
 	public void testGetVpnQueues()
 	{
@@ -65,6 +111,7 @@ public class ShowCommandsTest extends BaseSempTest
 			ShowCommands show = new ShowCommands(session);
 		
 			Queues queues = show.getVpnQueueStats(vpnName);
+			
 			assertNotNull(queues);
 		}
 		catch (HttpException | IOException | JAXBException | SAXException e)
@@ -73,6 +120,23 @@ public class ShowCommandsTest extends BaseSempTest
 		}
 	}
 
+	@Test @Ignore
+	public void testGetVpnQueueDetails()
+	{
+		try
+		{
+			ShowCommands show = new ShowCommands(session);
+		
+			QendptInfoType qinfo = show.getQueueDetails(vpnName, "testQueue1");
+			BigInteger quota = qinfo.getQuota();
+			
+			assertNotNull(qinfo);
+		}
+		catch (HttpException | IOException | JAXBException | SAXException e)
+		{
+			fail("Error occured: " + e.getMessage());
+		}
+	}
 	@Test @Ignore
 	public void testMessageSpoolCount()
 	{
