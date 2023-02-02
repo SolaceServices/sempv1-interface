@@ -21,6 +21,7 @@ import com.solace.psg.sempv1.HttpSempSession;
 import com.solace.psg.sempv1.ShowCommands;
 import com.solace.psg.sempv1.solacesempreply.ClientType;
 import com.solace.psg.sempv1.solacesempreply.QendptInfoType;
+import com.solace.psg.sempv1.solacesempreply.QueueType;
 import com.solace.psg.sempv1.solacesempreply.RpcReply.Rpc.Show.Queue.Queues;
 
 
@@ -127,8 +128,8 @@ public class ShowCommandsTest extends BaseSempTest
 		{
 			ShowCommands show = new ShowCommands(session);
 		
-			QendptInfoType qinfo = show.getQueueDetails(vpnName, "testQueue1");
-			BigInteger quota = qinfo.getQuota();
+			List<QueueType> qinfo = show.getQueueDetails(vpnName, "testQueue1");
+			BigInteger quota = qinfo.get(0).getInfo().getQuota();
 			
 			assertNotNull(qinfo);
 		}

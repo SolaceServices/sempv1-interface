@@ -62,7 +62,7 @@ public class ShowCommands
 
 	private String showVpnQueuesStats = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><stats></stats></queue></show></rpc>";
 
-	private String showVpnQueueDetail = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><detail></detail></queue></show></rpc>";
+	private String showVpnQueueDetail = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name><detail></detail></queue></show></rpc>";
 
 	private String showQueueSpooledMessages = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name></queue></show></rpc>";
 
@@ -217,18 +217,18 @@ public class ShowCommands
 	 * @throws IOException 
 	 * @throws AuthenticationException 
 	 */
-	public QendptInfoType getQueueDetails(String vpnName, String queueName) throws JAXBException, AuthenticationException, IOException
+	public List<QueueType> getQueueDetails(String vpnName, String queueName) throws JAXBException, AuthenticationException, IOException
 	{
 		if (vpnName == null)
 			throw new IllegalArgumentException("Argument vpnName cannot be null.");
 		if (queueName == null)
 			throw new IllegalArgumentException("Argument queueName cannot be null.");
 		
-		QendptInfoType result = null;
+		List<QueueType> result = null;
 		
 		session.open();
 
-		String command = showVpnQueueDetail.replace("{vpn}", vpnName).replace("{queueName}", queueName);
+		String command = showVpnQueueDetail.replace("{vpn}", vpnName).replace("{queueName}", queueName);		
 
 		logger.info("Running show command: {}", command);
 		CloseableHttpResponse response = session.execute(command);
@@ -246,8 +246,9 @@ public class ShowCommands
 			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
 					.unmarshal(new StringReader(apiOutput));
 
-			QueueType type = reply.getRpc().getShow().getQueue().getQueues().getQueue().get(0);
-			result = type.getInfo();
+			result = reply.getRpc().getShow().getQueue().getQueues().getQueue();
+			//QueueType type = reply.getRpc().getShow().getQueue().getQueues();//.getQueue().get(0);
+			//result = type.getInfo();
 		}
 		else
 		{
