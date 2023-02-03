@@ -62,7 +62,7 @@ public class ShowCommands
 
 	private String showVpnQueuesStats = "<show><queue><name>*</name><vpn-name>{vpn}</vpn-name><stats></stats></queue></show></rpc>";
 
-	private String showVpnQueueDetail = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name><detail></detail></queue></show></rpc>";
+	private String showVpnQueueDetail = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name><detail></detail><count/><num-elements>{elementCount}</num-elements></queue></show></rpc>";
 
 	private String showQueueSpooledMessages = "<show><queue><name>{queueName}</name><vpn-name>{vpn}</vpn-name></queue></show></rpc>";
 
@@ -208,28 +208,26 @@ public class ShowCommands
 		
 		return result;
 	}	
+	
 	/**
-	 * Gets the queue details.
+	 * Gets list of queues for a VPN.
 	 * @param vpnName
-	 * @param queueName
 	 * @return
-	 * @throws JAXBException 
 	 * @throws IOException 
-	 * @throws AuthenticationException 
+	 * @throws JAXBException 
+	 * @throws HttpException 
 	 */
-	public List<QueueType> getQueueDetails(String vpnName, String queueName) throws JAXBException, AuthenticationException, IOException
+	public List<QueueType> getQueueDetails(String vpnName, String queueName) throws JAXBException, IOException, HttpException
 	{
 		if (vpnName == null)
 			throw new IllegalArgumentException("Argument vpnName cannot be null.");
-		if (queueName == null)
-			throw new IllegalArgumentException("Argument queueName cannot be null.");
 		
-		List<QueueType> result = null;
+		List<QueueType> result = new ArrayList<>();
 		
 		session.open();
 
-		String command = showVpnQueueDetail.replace("{vpn}", vpnName).replace("{queueName}", queueName);		
-
+		String command = showVpnQueueDetail.replace("{vpn}", vpnName).replace("{queueName}", queueName).replace("{elementCount}", String.valueOf(pageElementCount));
+		
 		logger.info("Running show command: {}", command);
 		CloseableHttpResponse response = session.execute(command);
 
@@ -242,13 +240,51 @@ public class ShowCommands
 
 			jaxbContext = session.getRpcReplyContext();
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			
+
 			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
 					.unmarshal(new StringReader(apiOutput));
 
 			result = reply.getRpc().getShow().getQueue().getQueues().getQueue();
-			//QueueType type = reply.getRpc().getShow().getQueue().getQueues();//.getQueue().get(0);
-			//result = type.getInfo();
+
+			/*
+			for (int subCounter = 0; subCounter < queues.size(); subCounter++)
+			{
+				QueueType qt = queues.get(subCounter);
+				result.add(qt.getName());
+			}*/
+
+			MoreCookie mc = reply.getMoreCookie();
+			while (mc != null)
+			{
+				String commandMore = getMoreCookieContent(apiOutput);
+						
+				session.reopen();
+				response = session.executeMore(commandMore);
+
+				if (response.getStatusLine().getStatusCode() != 200)
+				{
+					throw new HttpException("The request status code was: " + response.getStatusLine().getStatusCode());
+				}
+				
+				else
+				{
+					logger.info("Received 200 response from SEMP API more command");
+
+					httpEntity = response.getEntity();
+					apiOutput = EntityUtils.toString(httpEntity);
+
+					jaxbContext = session.getRpcReplyContext();
+					jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+					reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
+							.unmarshal(new StringReader(apiOutput));
+
+					List<QueueType> moreQueues = reply.getRpc().getShow().getQueue().getQueues().getQueue();
+
+					result.addAll(moreQueues);				}
+				
+				mc = reply.getMoreCookie();
+			}
 		}
 		else
 		{
@@ -258,9 +294,11 @@ public class ShowCommands
 		session.close();
 
 		logger.info("Show command completed", command);
-	
+		
 		return result;
 	}
+
+	
 	/**
 	 * Gets queues info.
 	 * @param vpnName
