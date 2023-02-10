@@ -237,21 +237,22 @@ public class ShowCommands
 
 			HttpEntity httpEntity = response.getEntity();
 			String apiOutput = EntityUtils.toString(httpEntity);
+			//logger.debug("Received SEMP API output {}", apiOutput);
 
 			jaxbContext = session.getRpcReplyContext();
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 			com.solace.psg.sempv1.solacesempreply.RpcReply reply = (com.solace.psg.sempv1.solacesempreply.RpcReply) jaxbUnmarshaller
 					.unmarshal(new StringReader(apiOutput));
+			//logger.debug("Received SEMP API reply {}", reply);
+			
+			if (reply == null || reply.getRpc() == null || reply.getRpc().getShow() == null)
+				logger.error("Reply from show command: {} returned null value.", command);
+			if (reply.getRpc().getShow().getQueue() == null || reply.getRpc().getShow().getQueue().getQueues() == null )
+				logger.error("Reply for get Queues from show command: {} returned null value.", command);
+			else
+				result = reply.getRpc().getShow().getQueue().getQueues().getQueue();
 
-			result = reply.getRpc().getShow().getQueue().getQueues().getQueue();
-
-			/*
-			for (int subCounter = 0; subCounter < queues.size(); subCounter++)
-			{
-				QueueType qt = queues.get(subCounter);
-				result.add(qt.getName());
-			}*/
 
 			MoreCookie mc = reply.getMoreCookie();
 			while (mc != null)
