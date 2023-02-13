@@ -54,7 +54,7 @@ public class ShowCommands
 	
 	private int pageElementCount = 50;
 	
-	private String showMessageVPNs = "<show><message-vpn><vpn-name>{vpn}</vpn-name></message-vpn></show></rpc>";	
+	private String showMessageVPNs = "<show><message-vpn><vpn-name>{vpn}</vpn-name><detail/></message-vpn></show></rpc>";	
 	private String showMessageSpoolDetail = "<show><message-spool><vpn-name>{vpn}</vpn-name><detail></detail></message-spool></show></rpc>";	
 
 	private String showSubcriptions = "<show><smrp><subscriptions></subscriptions></smrp></show></rpc>";
@@ -319,7 +319,7 @@ public class ShowCommands
 		
 		session.open();
 
-		String command = showVpnUsernameDetail.replace("{vpn}", vpnName).replace("{queueName}", userName).replace("{elementCount}", String.valueOf(pageElementCount));
+		String command = showVpnUsernameDetail.replace("{vpn}", vpnName).replace("{userName}", userName).replace("{elementCount}", String.valueOf(pageElementCount));
 		
 		logger.info("Running show command: {}", command);
 		CloseableHttpResponse response = session.execute(command);
@@ -631,14 +631,21 @@ public class ShowCommands
 		
 		return result;		
 	}	
-
+	
 	public List<Vpn> getMessageVPN(String vpnName) throws IOException, JAXBException, HttpException
+	{
+		return getMessageVPN(vpnName, false);
+	}
+
+	public List<Vpn> getMessageVPN(String vpnName, boolean detail) throws IOException, JAXBException, HttpException
 	{
 		List<Vpn> result = null;
 		
 		session.open();
 
 		String command = showMessageVPNs.replace("{vpn}", "*");;
+		if (!detail)
+			command = command.replace("</detail>", "");
 		
 		logger.info("Running show command: {}", command);
 		CloseableHttpResponse response = session.execute(command);
