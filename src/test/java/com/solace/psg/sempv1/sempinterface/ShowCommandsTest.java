@@ -77,7 +77,7 @@ public class ShowCommandsTest extends BaseSempTest
 		{
 			ShowCommands show = new ShowCommands(session);
 		
-			List<String> vpns = show.getAllMessageVPNs();
+			List<String> vpns = show.getAllMessageVPNNames();
 			assertNotNull(vpns);
 			assumeTrue(vpns.size() > 0);
 		}
