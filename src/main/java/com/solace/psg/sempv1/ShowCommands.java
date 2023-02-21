@@ -643,7 +643,8 @@ public class ShowCommands
 		
 		session.open();
 
-		String command = showMessageVPNs.replace("{vpn}", vpnName);;
+		String command = showMessageVPNs.replace("{vpn}", vpnName);
+	
 		if (!detail)
 			command = command.replace("</detail>", "");
 		
